@@ -58,10 +58,9 @@ public class WordVectorFormalizer {
 			Instance instance = input.instance(i);
 			Instance outputInstance = new SparseInstance(instance.numAttributes());
 			outputInstance.setDataset(output);
-			output.add(outputInstance);
 			for (int j=0;j < instance.numAttributes(); j++){
 				if (input.attribute(i).equals(input.classAttribute())){
-					outputInstance.setClassValue(instance.stringValue(instance.classAttribute()));
+					outputInstance.setValue(output.classAttribute(), instance.classValue());
 				}else {
 					String originalWord = instance.attribute(j).name();
 					if (formalWordsMapping.containsKey(originalWord)){
@@ -79,6 +78,7 @@ public class WordVectorFormalizer {
 					outputInstance.setValue(j, 0);
 				}
 			}
+			output.add(outputInstance);
 		}
 		return output;
 	}

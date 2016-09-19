@@ -37,7 +37,7 @@ public class Main {
 	    	Instance instance = testSet.instance(i);
 	    	double pred = classifier.classifyInstance(instance);
 	    	String className = testSet.classAttribute().value((int)pred);
-    		String actualClassName = testSet.classAttribute().value(instance.classIndex());
+    		String actualClassName = testSet.classAttribute().value((int)instance.classValue());
 	    	if (className.equals("spam")){
 	    		if (actualClassName.equals("spam")){
 	    			numTruePositives++;
@@ -53,8 +53,8 @@ public class Main {
 	    	}
 	    }
     	System.out.println("Confusion Matrix");
-    	System.out.println(""+numTruePositives+"\t"+numTrueNegatives);
-    	System.out.println(""+numFalseNegatives+"\t"+numFalseNegatives);
+    	System.out.println(""+numTruePositives+"\t"+numFalsePositives);
+    	System.out.println(""+numFalseNegatives+"\t"+numTrueNegatives);
     	System.out.println("Accuracy: " + ((double)(numTruePositives+numTrueNegatives))/testSet.numInstances());
 	}
 	
@@ -69,7 +69,7 @@ public class Main {
 	    StringToWordVector filter = new StringToWordVector();
 		filter.setInputFormat(dataRaw);
 	    Instances dataFiltered = Filter.useFilter(dataRaw, filter);
-	    
+	    	    
 	    dataFiltered.randomize(new java.util.Random(0));
 
 	    System.out.println("training set: " + TR_PERCENT*100 + "%");
@@ -86,21 +86,21 @@ public class Main {
 	    SimpleCart simpleCart = new SimpleCart();
 	    long time_start_train_2 = System.currentTimeMillis();
 	    simpleCart.buildClassifier(trainingSet);
-	    System.out.printf("Training time with " + dataRaw.numInstances() + " + instances : %.3fsec%n",
+	    System.out.printf("Training time with " + trainingSet.numInstances() + " + instances : %.3fsec%n",
 	    	(System.currentTimeMillis() - time_start_train_2)/1000.0D
 	    );
 	    testClassifierAndPrintResults(simpleCart, testSet);
 
 	    //formalisasi
 	    WordVectorFormalizer formalizerFilter = new WordVectorFormalizer();
-	    formalizerFilter.setInputFormat(dataRaw);
+	    formalizerFilter.setInputFormat(dataFiltered);
 	    
 	    //coba dengan formalisasi
 	    System.out.println("mencoba SimpleCart + formalisasi...");
 	    SimpleCart simpleFormalizedCart = new SimpleCart();
 	    long time_start_train_1 = System.currentTimeMillis();
 	    simpleFormalizedCart.buildClassifier(formalizerFilter.doFilter(trainingSet));
-	    System.out.printf("Training time with " + dataRaw.numInstances() + " + instances : %.3fsec%n",
+	    System.out.printf("Training time with " + trainingSet.numInstances() + " + instances : %.3fsec%n",
 	    	(System.currentTimeMillis() - time_start_train_1)/1000.0D
 	    );
 	    testClassifierAndPrintResults(simpleFormalizedCart, formalizerFilter.doFilter(testSet));
